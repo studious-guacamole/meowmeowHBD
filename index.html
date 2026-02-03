@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>芭魯比的老公 ❤️</title>
+<style>
+body {
+  margin:0;
+  height:100vh;
+  font-family:Arial,sans-serif;
+  background:#000;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+#content {text-align:center; position:relative; z-index:2;}
+
+img.main {
+  width:300px; height:300px; 
+  object-fit:cover; border-radius:16px; margin-bottom:20px;
+}
+
+h1 {font-size:22px; margin-bottom:30px; line-height:1.4;}
+
+.buttons {
+  display: flex;
+  flex-direction: column; /* 改為縱向排列，方便下方放文字 */
+  align-items: center;
+  gap: 15px;
+  min-height: 100px;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+button {
+  font-size:18px; padding:10px 30px; border:none; border-radius:30px;
+  cursor:pointer; user-select:none;
+  transition: background 0.3s;
+}
+
+#yes {background:hotpink; color:white;}
+#no {background:gray; color:white; position: relative; z-index: 10;}
+
+/* 悄悄話文字樣式 */
+#hint-text {
+  color: #ffb6c1;
+  font-size: 14px;
+  font-style: regular;
+  opacity: 0;
+  transition: opacity 1s;
+  height: 20px;
+}
+
+#slideshow {
+  position:fixed; inset:0; display:none; 
+  justify-content:center; align-items:center; z-index:3;
+}
+#slideshow img {
+  width: 400px; height: 500px;
+  object-fit: cover; border: 5px solid white; border-radius:20px;
+}
+canvas {position:fixed; inset:0; display:none; z-index:1;}
+</style>
+</head>
+<body>
+
+<div id="content">
+  <img src="photo.jpg" class="main" />
+  <h1>
+    Oh My Dear Jefferson~<br>
+    Will you let me be with you on every birthday<br>
+    F O R E V E R ?
+  </h1>
+  <div class="buttons">
+    <div class="btn-row">
+      <button id="yes">Yes</button>
+      <button id="no">No</button>
+    </div>
+    <div id="hint-text">Looks like this NO is feeling a little shy~😏反正你也逃不出我的魔掌了</div>
+  </div>
+</div>
+
+<canvas id="fireworks"></canvas>
+<div id="slideshow">
+  <img id="slideImage" src="photo1.jpg" />
+</div>
+
+<script>
+  const romanticColors = [
+  "rgba(255,255,255,0.9)",   // 白
+  "rgba(255,182,193,0.9)",   // 淡粉
+  "rgba(173,216,230,0.9)",   // 淡藍
+  "rgba(216,191,216,0.9)"    // 淡紫
+];
+
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const content = document.getElementById("content");
+const hintText = document.getElementById("hint-text");
+
+let noIsYes = false;
+let chasing = false;
+let hasStartedChasing = false;
+let chaseTimer = null;
+let chaseCount = 0; // 追逐計數器
+
+function moveNoRandomly() {
+  const rect = noBtn.getBoundingClientRect();
+  const padding = 50; 
+  const maxX = window.innerWidth - rect.width - padding;
+  const maxY = window.innerHeight - rect.height - padding;
+
+  let x = Math.max(padding, Math.random() * maxX);
+  let y = Math.max(padding, Math.random() * maxY);
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+  
+  // 每次移動就增加計數
+  chaseCount++;
+  
+  // 大約跳動第二次時顯現文字 (考慮到計時器頻率，這裡設為 2)
+  if(chaseCount >= 2) {
+    hintText.style.opacity = "1";
+  }
+}
+
+document.addEventListener("mousemove", (e)=>{
+  if(noIsYes) return;
+  const rect = noBtn.getBoundingClientRect();
+  const dx = e.clientX - (rect.left + rect.width/2);
+  const dy = e.clientY - (rect.top + rect.height/2);
+  const distance = Math.hypot(dx,dy);
+
+  if(distance < 130){
+    if(!hasStartedChasing) {
+      hasStartedChasing = true;
+      noBtn.style.position = "fixed"; 
+      moveNoRandomly();
+    }
+    if(!chasing){
+      chasing = true;
+      chaseTimer = setInterval(moveNoRandomly, 120); // 稍微調慢一點點讓字出現得更自然
+    }
+  }
+
+  if(distance > 200 && chasing){
+    clearInterval(chaseTimer);
+    chasing = false;
+  }
+});
+
+noBtn.addEventListener("click", ()=>{
+  if(!noIsYes){
+    noIsYes = true;
+    noBtn.textContent = "Yes";
+    noBtn.style.background = "hotpink";
+    hintText.style.opacity = "0"; // 點擊後文字消失
+    clearInterval(chaseTimer);
+    noBtn.style.position = "static";
+  }
+});
+
+yesBtn.addEventListener("click", startMagic);
+noBtn.addEventListener("click", ()=>{ if(noIsYes) startMagic(); });
+
+function startMagic(){
+  content.style.display="none";
+  startFireworks();
+  startSlideshow();
+}
+
+// 煙火與輪播邏輯保持不變...
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+let particles=[];
+
+function startFireworks(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  canvas.style.display="block";
+  setInterval(()=>{
+
+const centerX = Math.random() * canvas.width;
+const centerY = Math.random() * canvas.height;
+
+for(let i=0;i<300;i++){
+  const angle = Math.random() * Math.PI * 2;
+  const speed = Math.random() * 10 + 4;
+
+  particles.push({
+    x: centerX,
+    y: centerY,
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    life: 140,
+    color: romanticColors[Math.floor(Math.random()*romanticColors.length)]
+  });
+}
+
+
+  },600);
+  animate();
+}
+
+function animate(){
+  ctx.fillStyle="rgba(0,0,0,0.12)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{
+    p.x+=p.vx; p.y+=p.vy; p.life--;
+    ctx.fillStyle=p.color;
+    ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();
+    if(p.life<=0) particles.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+
+function startSlideshow(){
+  const slideshow=document.getElementById("slideshow");
+  const img=document.getElementById("slideImage");
+  const photos=["photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg","photo5.jpg","photo6.jpg"]
+  let index=0;
+  slideshow.style.display="flex";
+  setInterval(()=>{
+    index=(index+1)%photos.length;
+    img.src=photos[index];
+  },500); 
+}
+</script>
+</body>
+</html>
