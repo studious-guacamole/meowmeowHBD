@@ -173,7 +173,7 @@ function animate(){
 
 // 輪播
 function startSlideshow(){
-  const img=document.getElementById("slideImage"), photos=["photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg","photo5.jpg","photo6.jpg"];
+  const img=document.getElementById("slideImage"), photos=["photo1.jpg","photo2.jpg","photo3.jpg","photo7.jpg","photo4.jpg","photo5.jpg","photo6.jpg"];
   let index=0; document.getElementById("slideshow").style.display="flex";
   setInterval(()=>{ index=(index+1)%photos.length; img.src=photos[index]; },500);
 }
@@ -209,3 +209,4 @@ function startPosterCarousel() {
 </script>
 </body>
 </html>
+
