@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>芭魯比的老公❤️</title>
 <style>
 /* 頁面基礎樣式 */
 body {
-  margin:0; height:100vh; font-family:Arial,sans-serif;
+  margin:0; height:100vh; font-family: 'Helvetica Neue', Arial, sans-serif;
   background:#000; color:white; display:flex;
   justify-content:center; align-items:center; overflow:hidden;
 }
@@ -26,6 +27,7 @@ button { font-size:18px; padding:10px 30px; border:none; border-radius:30px; cur
 #slideshow {
   position:fixed; inset:0; display:none; flex-direction: column;
   justify-content:center; align-items:center; z-index:3;
+  background: rgba(0,0,0,0.5); 
 }
 #slideshow img.slide {
   width: 400px; height: 500px; object-fit: cover;
@@ -57,14 +59,62 @@ button { font-size:18px; padding:10px 30px; border:none; border-radius:30px; cur
   to { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 
-/* Netflix 使用者介面 */
-.user-picker { display: none; text-align: center; color: white; }
-.netflix-carousel { width: 100%; max-width: 500px; height: 150px; margin-bottom: 40px; position: relative; overflow: hidden; margin-left:auto; margin-right:auto; }
-.netflix-carousel img { width: 100%; height: 100%; object-fit: contain; position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 1s; }
+/* --- Netflix 使用者介面 --- */
+.user-picker { 
+  display: none; text-align: center; color: white; 
+  width: 100%; height: 100vh; position: relative; 
+}
+
+/* 海報容器：高度依然隨視窗變動 */
+.netflix-carousel { 
+  width: 100vw; 
+  height: calc(100vh - 350px); 
+  position: absolute; top: 0; left: 0; 
+  overflow: hidden; z-index: 5;
+  background: #000; /* 左右黑影的底色 */
+}
+
+/* 海報下方與四周的黑影彌補 */
+.netflix-carousel::after {
+  content: ""; position: absolute; inset: 0;
+  /* 四周向中心的漸層黑影，讓海報邊緣更柔和 */
+  background: radial-gradient(circle, transparent 40%, #000 100%),
+              linear-gradient(to top, #000 5%, transparent 40%);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.netflix-carousel img { 
+  width: 100%; height: 100%; 
+  object-fit: contain; /* 關鍵：讓海報完整顯示，不裁切 */
+  position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 1.2s; 
+}
 .netflix-carousel img.active { opacity: 1; }
-.user-list { display: flex; justify-content: center; gap: 30px; margin-top: 30px; }
-.avatar { width: 110px; height: 110px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 50px; border: 3px solid transparent; transition: 0.2s; cursor: pointer; }
-.avatar:hover { border: 3px solid white; }
+
+/* 使用者資訊區：穩定固定在下方 */
+.user-info-area {
+  position: absolute;
+  bottom: 8%;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.user-info-area h2 { 
+  font-size: 28px; font-weight: normal; letter-spacing: 1px; margin-bottom: 20px;
+}
+
+.user-list { display: flex; justify-content: center; gap: 30px; }
+.user-item { cursor: pointer; text-align: center; width: 110px; }
+.avatar { 
+  width: 110px; height: 110px; border-radius: 4px; 
+  display: flex; align-items: center; justify-content: center; 
+  font-size: 50px; border: 3px solid transparent; transition: 0.2s; 
+  margin-bottom: 10px;
+}
+.user-item:hover .avatar { border: 3px solid white; transform: scale(1.05); }
+.user-item p { margin: 0; color: #808080; transition: 0.3s; }
+.user-item:hover p { color: white; }
 
 canvas {position:fixed; inset:0; display:none; z-index:1;}
 </style>
@@ -79,7 +129,7 @@ canvas {position:fixed; inset:0; display:none; z-index:1;}
       <button id="yes">Yes</button>
       <button id="no">No</button>
     </div>
-    <div id="hint-text">Looks like this NO is feeling a little shy~😏反正你也逃不出我的魔掌了</div>
+    <div id="hint-text">Looks like this NO is feeling a little shy~反正你也逃不出我的魔掌了 😏</div>
   </div>
 </div>
 
@@ -102,15 +152,18 @@ canvas {position:fixed; inset:0; display:none; z-index:1;}
       <img src="poster2.jpg">
       <img src="poster3.jpg">
     </div>
-    <h2>Who's watching?</h2>
-    <div class="user-list">
-      <div class="user-item" onclick="alert('Enjoy your night, Jefferson! ❤️')">
-        <div class="avatar" style="background: #e50914;">J</div>
-        <p>Jefferson</p>
-      </div>
-      <div class="user-item" onclick="alert('Happy Birthday! ❤️')">
-        <div class="avatar" style="background: #5d9cec;">W</div>
-        <p>Your Wife</p>
+    
+    <div class="user-info-area">
+      <h2>Who's watching?</h2>
+      <div class="user-list">
+        <div class="user-item" onclick="alert('Enjoy your night, Jefferson! ❤️')">
+          <div class="avatar" style="background: #e50914;">J</div>
+          <p>Jefferson</p>
+        </div>
+        <div class="user-item" onclick="alert('Happy Birthday! ❤️')">
+          <div class="avatar" style="background: #5d9cec;">W</div>
+          <p>Your Wife</p>
+        </div>
       </div>
     </div>
   </div>
@@ -121,7 +174,6 @@ const romanticColors = ["rgba(255,255,255,0.9)", "rgba(255,182,193,0.9)", "rgba(
 const yesBtn = document.getElementById("yes"), noBtn = document.getElementById("no"), netflixBtn = document.getElementById("netflix-btn"), hintText = document.getElementById("hint-text");
 let noIsYes = false, chasing = false, hasStartedChasing = false, chaseCount = 0, chaseTimer = null;
 
-// No 逃跑
 function moveNoRandomly() {
   const rect = noBtn.getBoundingClientRect();
   noBtn.style.left = Math.random() * (window.innerWidth - rect.width - 50) + "px";
@@ -151,7 +203,6 @@ function startMagic(){
   setTimeout(() => { netflixBtn.style.opacity = "1"; }, 5000);
 }
 
-// 煙火
 const canvas = document.getElementById("fireworks"), ctx = canvas.getContext("2d");
 let particles=[];
 function startFireworks(){
@@ -171,25 +222,21 @@ function animate(){
   requestAnimationFrame(animate);
 }
 
-// 輪播
 function startSlideshow(){
   const img=document.getElementById("slideImage"), photos=["photo1.jpg","photo2.jpg","photo3.jpg","photo7.jpg","photo4.jpg","photo5.jpg","photo6.jpg"];
   let index=0; document.getElementById("slideshow").style.display="flex";
   setInterval(()=>{ index=(index+1)%photos.length; img.src=photos[index]; },500);
 }
 
-// Netflix 逐字動畫邏輯
 netflixBtn.addEventListener("click", () => {
   document.getElementById("netflix-screen").style.display = "flex";
   const letters = document.querySelectorAll(".letter");
   letters.forEach((l, i) => {
-    setTimeout(() => { l.classList.add("animate"); }, i * 250); // 每個字間隔 0.25 秒
+    setTimeout(() => { l.classList.add("animate"); }, i * 250);
   });
-
   setTimeout(() => {
     document.getElementById("logo-container").classList.add("zoom-out");
-  }, 2200); // 全部字跑完後縮放
-
+  }, 2200);
   setTimeout(() => {
     document.getElementById("netflix-intro").style.display = "none";
     document.getElementById("user-picker-ui").style.display = "block";
@@ -209,4 +256,3 @@ function startPosterCarousel() {
 </script>
 </body>
 </html>
-
