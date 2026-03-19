@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>芭魯比的老公❤️</title>
+<style>
+/* 頁面基礎樣式 */
+body {
+  margin:0; height:100vh; font-family: 'Helvetica Neue', Arial, sans-serif;
+  background:#000; color:white; display:flex;
+  justify-content:center; align-items:center; overflow-x:hidden;
+}
+#content {text-align:center; position:relative; z-index:2;}
+img.main { width:300px; height:300px; object-fit:cover; border-radius:16px; margin-bottom:20px; }
+h1 {font-size:22px; margin-bottom:30px; line-height:1.4;}
+
+/* 按鈕區 */
+.buttons { display: flex; flex-direction: column; align-items: center; gap: 15px; min-height: 100px; }
+.btn-row { display: flex; justify-content: center; gap: 20px; }
+button { font-size:18px; padding:10px 30px; border:none; border-radius:30px; cursor:pointer; user-select:none; transition: 0.3s; }
+#yes {background:hotpink; color:white;}
+#no {background:gray; color:white; position: relative; z-index: 10;}
+#hint-text { color: #ffb6c1; font-size: 14px; opacity: 0; transition: opacity 1s; height: 20px; }
+
+/* 煙火後的輪播 */
+#slideshow {
+  position:fixed; inset:0; display:none; flex-direction: column;
+  justify-content:center; align-items:center; z-index:3;
+  background: rgba(0,0,0,0.5); 
+}
+#slideshow img.slide {
+  width: 400px; height: 500px; object-fit: cover;
+  border: 5px solid white; border-radius:20px; box-shadow: 0 0 20px rgba(255,105,180,0.5);
+}
+
+/* Netflix 驚喜按鈕 */
+#netflix-btn {
+  margin-top: 30px; background: #e50914; color: white;
+  padding: 15px 30px; font-size: 18px; border: none; border-radius: 5px;
+  cursor: pointer; opacity: 0; transition: opacity 2s; z-index: 4;
+}
+
+#netflix-screen {
+  position: fixed;
+  inset: 0;
+  background-color: #000;
+  z-index: 99999; /* 確保在最上層 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#netflix-intro {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#intro-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 保持影片比例，不拉伸 */
+}
+
+/* --- Netflix 使用者介面 --- */
+.user-picker { 
+  display: none; text-align: center; color: white; 
+  width: 100%; height: 100vh; position: relative; 
+}
+
+.netflix-carousel { 
+  width: 100vw; height: calc(100vh - 350px); 
+  position: absolute; top: 0; left: 0; 
+  overflow: hidden; z-index: 5; background: #000;
+}
+
+.netflix-carousel::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle, transparent 40%, #000 100%),
+              linear-gradient(to top, #000 5%, transparent 40%);
+  z-index: 6; pointer-events: none;
+}
+
+.netflix-carousel img { 
+  width: 100%; height: 100%; object-fit: contain; 
+  position: absolute; left: 0; top: 0; opacity: 0; transition: opacity 1.2s; 
+}
+.netflix-carousel img.active { opacity: 1; }
+
+.user-info-area { position: absolute; bottom: 8%; left: 0; width: 100%; z-index: 10; }
+.user-info-area h2 { font-size: 28px; font-weight: normal; letter-spacing: 1px; margin-bottom: 20px; }
+.user-list { display: flex; justify-content: center; gap: 30px; }
+.user-item { cursor: pointer; text-align: center; width: 110px; }
+.avatar { 
+  width: 110px; height: 110px; border-radius: 4px; 
+  display: flex; align-items: center; justify-content: center; 
+  font-size: 50px; border: 3px solid transparent; transition: 0.2s; 
+  margin-bottom: 10px;
+}
+.user-item:hover .avatar { border: 3px solid white; transform: scale(1.05); }
+.user-item p { margin: 0; color: #808080; transition: 0.3s; }
+.user-item:hover p { color: white; }
+
+/* --- 主要內容頁面 (加強圖層) --- */
+#main-browse {
+  display: none; width: 100%; min-height: 100vh; background: #141414;
+  position: absolute; top: 0; left: 0; z-index: 20000; /* 最高層級 */
+  animation: fadeIn 1.2s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+nav {
+  position: fixed; top: 0; width: 100%; padding: 20px 4%; 
+  display: flex; align-items: center; z-index: 100;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+  transition: background 0.3s;
+}
+/* 整合：導覽列 Logo 改為容器 */
+.nav-logo { width: 120px; margin-right: 25px; color: #e50914; display: flex; align-items: center; }
+.nav-logo svg { width: 100%; height: auto; fill: currentColor; }
+
+.nav-links { display: flex; gap: 20px; font-size: 14px; color: #e5e5e5; }
+
+.hero { width: 100%; height: 75vh; margin-top: 70px;position: relative;background: #141414; }
+.hero-img { width: 100%; height: 100%; object-fit: cover;border-radius: 8px }
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top, 
+    #141414 0%,         /* 最底部是完全的背景色 */
+    rgba(20, 20, 20, 0.8) 15%, 
+    rgba(20, 20, 20, 0) 50%
+  ),
+  linear-gradient(to right, rgba(0,0,0,0.8) 10%, transparent 70%);
+}
+/* 讓圖片與影片切換時有淡入淡出感 */
+.hero-img, #hero-trailer {
+  transition: opacity 1.5s ease-in-out;
+}
+.hero-content { position: absolute; bottom: 20%; left: 4%; max-width: 500px; }
+.hero-content h1 { font-size: 50px; margin: 0; }
+.hero-content p { font-size: 16px; margin: 15px 0; line-height: 1.4; }
+.hero-btns { display: flex; gap: 10px; }
+.btn-white { background: white; color: black; padding: 10px 25px; border-radius: 4px; font-weight: bold; border:none; cursor:pointer;}
+.btn-gray { background: rgba(109, 109, 110, 0.7); color: white; padding: 10px 25px; border-radius: 4px; font-weight: bold; border:none; cursor:pointer;}
+/* --- 播放與更多資訊按鈕的互動效果 --- */
+
+/* 1. 白色按鈕 (Play)：懸停時變為稍微透明或淺灰色 */
+.btn-white:hover {
+  background-color: rgba(255, 255, 255, 0.75) !important; /* 變成稍微透明的白，視覺上會變深 */
+  transform: scale(1.05); /* 微放大增加動感 */
+}
+
+/* 2. 灰色按鈕 (More Info)：懸停時背景顏色變深 */
+.btn-gray:hover {
+  background-color: rgba(70, 70, 70, 0.9) !important; /* 變為更深的不透明灰色 */
+  transform: scale(1.05);
+}
+
+/* 讓按鈕縮放時平滑一點 */
+.btn-white, .btn-gray {
+  transition: background-color 0.3s ease, transform 0.2s ease !important;
+}
+/* 2. 讓 Romantic Memories 區塊往上移，且背景透明 */
+.row {
+  padding: 0 4% 40px 4%; 
+  position: relative;
+  margin-top: -50px;      /* 往上重疊 150px，你可以根據喜好調整這個數字 */
+  z-index: 20005;
+  background: transparent;  /* 關鍵：背景透明，才會顯示 Hero 的漸層 */
+}
+.row-title { font-size: 20px; font-weight: bold; margin-bottom: 8px; }
+/* 1. 橫排容器：修正拖拽感與邊距 */
+.row-posters {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto; /* 保留底層滾動，讓手機也能滑 */
+    padding: 20px 4%;
+    cursor: grab;     /* 暗示可以抓取 */
+    user-select: none; /* 防止圖片被滑鼠選取變藍色，這會導致 drag 失效 */
+    scrollbar-width: none; /* 隱藏火狐捲動條 */
+}
+
+.row-posters::-webkit-scrollbar {
+    display: none;    /* 隱藏 Chrome 捲動條 */
+}
+
+/* 2. 在容器最後加一個透明墊片，確保最後一張能滑過來 */
+.row-posters::after {
+    content: "";
+    flex: 0 0 4%;
+}
+
+/* 3. 橫向圖片卡片：16:9 比例 */
+/* 3. 調整照片卡片，加上一點陰影增加層次感 */
+.poster-card {
+  flex: 0 0 300px !important;
+  aspect-ratio: 16 / 9;
+  background: #333;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* 增加陰影感 */
+}
+
+.poster-card:hover { 
+    transform: scale(1.05); 
+    z-index: 10; 
+}
+
+.poster-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;         /* 照片自動填滿橫向格子 */
+    pointer-events: none;      /* 讓圖片不干擾滑鼠拖拽動作 */
+}
+/*Netflix logo定位*/
+.top-left-logo { position: fixed; top: 25px; left: 25px; width: 120px; z-index: 10001; filter: drop-shadow(0 0 5px rgba(229, 9, 20, 0.4)); }
+canvas {position:fixed; inset:0; display:none; z-index:1;}
+
+/* =========================================
+   2. 新增樣式 (Info More 彈出視窗)
+   ========================================= */
+#info-modal {
+    position: fixed; inset: 0; z-index: 30000;
+    background: rgba(0,0,0,0.7);
+    display: none; justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 0.4s;
+    
+}
+#info-modal.show { opacity: 1; }
+
+.info-card-container {
+    background: #181818; width: 90%; max-width: 750px;
+    max-height: 85vh; /* 關鍵：高度不超過螢幕的 85% */
+    border-radius: 10px;overflow-y: hidden; position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+#info-modal.show .info-card-container { transform: scale(1); }
+
+/* 上方影片區域 */
+.info-video-wrapper {
+    position: relative; width: 100%; flex-shrink: 0; /* 防止影片被壓縮 */padding-top: 0; /* 16:9 比例 */
+    background: black;
+    overflow: hidden;
+}
+.info-video-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+/* 關閉按鈕 */
+.close-info-btn {
+    position: absolute; top: 15px; right: 15px; z-index: 20;
+    background: rgba(0,0,0,0.5); border-radius: 50%; width: 36px; height: 36px;
+    color: white; font-size: 24px; line-height: 36px; text-align: center;
+    cursor: pointer; border: 2px solid white;
+}
+.close-info-btn:hover { background: white; color: black; }
+
+/* 下方簡介區域 */
+.info-details { padding: 25px 40px 40px 40px; color: #fff; }
+.info-meta { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; color: #bcbcbc; font-size: 14px;}
+.match-score { color: #46d369; font-weight: bold; font-size: 16px; }
+.info-year { font-weight: bold; color: white; }
+.info-badge { border: 1px solid #777; padding: 0 5px; font-size: 12px; }
+
+.info-desc-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+.synopsis { font-size: 16px; line-height: 1.6; color: #fff; }
+.cast-info { font-size: 14px; line-height: 1.6; }
+.cast-info span { color: #777; margin-right: 5px; }
+
+/* 針對手機版的微調 */
+@media (max-width: 768px) {
+    .info-desc-grid { grid-template-columns: 1fr; }
+}
+.info-video-wrapper {
+    width: 100%;
+    position: relative;
+    background: #000;
+    line-height: 0; /* 消除底部微小間隙 */
+}
+
+.modal-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover; /* 確保影片填滿但不變形 */
+}
+</style>
+</head>
+<body>
+
+<div id="content">
+  <img src="photo.jpg" class="main" />
+  <h1>Oh My Dear Jefferson~<br>你是否願意每年都讓我陪你一起過生日呢？</h1>
+  <div class="buttons">
+    <div class="btn-row">
+      <button id="yes">Yes</button>
+      <button id="no">No</button>
+    </div>
+    <div id="hint-text">Looks like this NO is feeling a little shy~反正你也逃不出我的魔掌了 😏</div>
+  </div>
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<div id="slideshow">
+  <img id="slideImage" class="slide" src="photo1.jpg" />
+  <button id="netflix-btn">與你的妻子一同 Netflix and Chill 🍿</button>
+</div>
+
+<div id="netflix-screen" style="display:none; position:fixed; inset:0; background:#000; z-index:30000; justify-content:center; align-items:center;">
+    
+    <div id="netflix-intro" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
+        <video id="intro-video" playsinline style="max-width:100%; max-height:100%;">
+            <source src="netflix_intro.mp4" type="video/mp4">
+        </video>
+    </div>
+  
+  <div id="user-picker-ui" class="user-picker" style="display:none;">
+    
+    <div class="netflix-carousel">
+        <img src="poster3.jpg" class="active">
+        <img src="poster1.jpg">
+        <img src="poster2.jpg">
+        <img src="poster4.jpg">
+    </div>
+    
+    <div class="user-info-area">
+      <h2>Who's watching?</h2>
+      <div class="user-list">
+        <div class="user-item" onclick="enterMainPage()">
+          <div class="avatar" style="background: #e50914;">J</div>
+          <p>Jefferson</p>
+        </div>
+        <div class="user-item" onclick="alert('Happy Birthday! ❤️')">
+          <div class="avatar" style="background: #5d9cec;">W</div>
+          <p>Your Wife</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="main-browse">
+  <nav id="navbar">
+    <div class="nav-logo">
+      <svg viewBox="0 0 111 30">/* Logo Path */</svg>
+    </div>
+    <div class="nav-links">
+      <span>Home</span>
+      <span>TV Shows</span>
+      <span>Movies</span>
+      <span>New & Popular</span>
+      <span>My List</span>
+    </div>
+  </nav>
+<img src="netflix-logo.png" class="top-left-logo">
+  <div class="hero">
+    <img src="hero1.jpg" class="hero-img" alt="Hero Background">
+    <video id="hero-trailer" muted playsinline style="display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1;">
+      <source src="video test.MOV" type="video/mp4">
+    </video>
+    <div class="hero-overlay" style="z-index: 2;"></div>
+    <div class="hero-content" style="z-index: 3;">
+      <h1>Best Husband Forever</h1>
+      <p>Season 1 • 2026 <br>
+      一部專屬於 Jefferson 的原創影集。<br>一位全世界最幸福的美少女與她超級帥氣的老公，從命運般的重逢，到在平凡日子裡慢慢相愛，最終決定攜手走過往後的每一天。</p>
+      
+      <div class="hero-btns">
+        <button class="btn-white">▶ Play</button>
+        <button class="btn-gray" id="more-info-trigger">ⓘ More Info</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="row-title">Top Picks for You Today</div>
+    <div class="row-posters">
+      <div class="poster-card"><img src="poster1-1.jpg"></div>
+      <div class="poster-card"><img src="poster5-1.jpg"></div>
+      <div class="poster-card"><img src="poster9-1.jpg"></div>
+      <div class="poster-card"><img src="poster6-1.jpg"></div>
+      <div class="poster-card"><img src="poster7-1.jpg"></div><div class="poster-card"><img src="poster10-1.JPG"></div> </div>
+    </div>
+   <div class="row">
+  <div class="row-title">Netflix Originals</div>
+  <div class="row-posters">
+    <div class="poster-card"><img src="poster4-1.jpg"></div>
+    <div class="poster-card"><img src="poster11-1.jpg"></div>
+    <div class="poster-card"><img src="poster13-1.jpg"></div>
+    <div class="poster-card"><img src="poster2-1.jpg"></div>
+    <div class="poster-card"><img src="poster12-1.JPG"></div>
+    <div class="poster-card"><img src="poster14-1.JPG"></div>
+  </div>
+</div>
+    </div>
+  </div>
+  </div>
+</div>
+
+
+<div id="info-modal">
+    <div class="info-card-container">
+        <div class="close-info-btn">× </div>
+        
+        <div class="info-video-wrapper">
+            <video autoplay muted loop playsinline class="modal-video">
+        <source src="video2.MOV" type="video/mp4">
+        您的瀏覽器不支援影片播放。
+    </video>
+        </div>
+        <audio id="bg-music" loop>
+    <source src="Rasputin.mp3" type="audio/mpeg">
+</audio>
+
+        <div class="info-details">
+            <div class="info-meta">
+                <span class="match-score">100% Match</span>
+                <span class="info-year">2026</span>
+                <span class="info-badge">HD</span>
+                <span class="info-badge">Romance</span>
+            </div>
+            <div class="info-desc-grid">
+                <div class="synopsis">
+                    <h3>About This Moment</h3>
+                    <p>這是一部關於芭魯比與 Jefferson 的長篇浪漫影集。 從相遇的那一刻起，每一集都充滿了歡笑與心動。 <br>目前本劇已獲得「全球最佳老公獎」提名</p>
+                </div>
+                <div class="cast-info">
+                    <p><span>Cast:</span> Jefferson, Barbie</p>
+                    <p><span>Genres:</span> Romantic, Life</p>
+                    <p><span>This show is:</span> Sweet, Heartwarming</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const romanticColors = ["rgba(255,255,255,0.9)", "rgba(255,182,193,0.9)", "rgba(173,216,230,0.9)", "rgba(216,191,216,0.9)"];
+const yesBtn = document.getElementById("yes"), noBtn = document.getElementById("no"), netflixBtn = document.getElementById("netflix-btn"), hintText = document.getElementById("hint-text");
+let noIsYes = false, chasing = false, hasStartedChasing = false, chaseCount = 0, chaseTimer = null;
+
+// --- 按鈕邏輯保持不變 ---
+function moveNoRandomly() {
+  const rect = noBtn.getBoundingClientRect();
+  noBtn.style.left = Math.random() * (window.innerWidth - rect.width - 50) + "px";
+  noBtn.style.top = Math.random() * (window.innerHeight - rect.height - 50) + "px";
+  if(++chaseCount >= 2) hintText.style.opacity = "1";
+}
+document.addEventListener("mousemove", (e)=>{
+  if(noIsYes) return;
+  const rect = noBtn.getBoundingClientRect();
+  const dist = Math.hypot(e.clientX-(rect.left+rect.width/2), e.clientY-(rect.top+rect.height/2));
+  if(dist < 130){
+    if(!hasStartedChasing) { hasStartedChasing = true; noBtn.style.position = "fixed"; moveNoRandomly(); }
+    if(!chasing){ chasing = true; chaseTimer = setInterval(moveNoRandomly, 120); }
+  } else if(dist > 200 && chasing){ clearInterval(chaseTimer); chasing = false; }
+});
+noBtn.addEventListener("click", ()=>{
+  if(!noIsYes){ noIsYes = true; noBtn.textContent = "Yes"; noBtn.style.background = "hotpink"; hintText.style.opacity = "0"; clearInterval(chaseTimer); noBtn.style.position = "static"; }
+});
+
+yesBtn.addEventListener("click", startMagic);
+noBtn.addEventListener("click", ()=>{ if(noIsYes) startMagic(); });
+
+function startMagic(){
+  document.getElementById("content").style.display="none";
+  startFireworks();
+  startSlideshow();
+  setTimeout(() => { netflixBtn.style.opacity = "1"; }, 5000);
+}
+
+// --- 煙火與輪播邏輯保持不變 ---
+const canvas = document.getElementById("fireworks"), ctx = canvas.getContext("2d");
+let particles=[];
+function startFireworks(){
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight; canvas.style.display="block";
+  setInterval(()=>{
+    const cx = Math.random()*canvas.width, cy = Math.random()*canvas.height;
+    for(let i=0;i<200;i++){
+      const angle = Math.random()*Math.PI*2, speed = Math.random()*8+2;
+      particles.push({x:cx, y:cy, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed, life:140, color:romanticColors[Math.floor(Math.random()*romanticColors.length)]});
+    }
+  },800);
+  animate();
+}
+function animate(){
+  ctx.fillStyle="rgba(0,0,0,0.15)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{ p.x+=p.vx; p.y+=p.vy; p.life--; ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); if(p.life<=0) particles.splice(i,1); });
+  requestAnimationFrame(animate);
+}
+
+function startSlideshow(){
+  const img=document.getElementById("slideImage"), photos=["photo1.jpg","photo2.jpg","photo3.jpg","photo7.jpg","photo4.jpg","photo5.jpg","photo6.jpg"];
+  let index=0; document.getElementById("slideshow").style.display="flex";
+  setInterval(()=>{ index=(index+1)%photos.length; img.src=photos[index]; },500);
+}
+/* =========================================
+   3. 新功能: Info More 彈出視窗邏輯
+   ========================================= */
+const moreInfoBtn = document.getElementById('more-info-trigger');
+const infoModal = document.getElementById('info-modal');
+const closeInfoBtn = document.querySelector('.close-info-btn');
+const modalContent = document.querySelector('.info-card-container');
+
+// 點擊 "More Info" 顯示彈窗
+moreInfoBtn.addEventListener('click', () => {
+    infoModal.style.display = 'flex';
+    // 強制重繪以觸發 transition
+    setTimeout(() => {
+        infoModal.classList.add('show');
+    }, 10);
+});
+
+
+// 點擊 "X" 關閉彈窗
+closeInfoBtn.addEventListener('click', closeModal);
+
+// 點擊背景空白處關閉
+infoModal.addEventListener('click', (e) => {
+    if (e.target === infoModal) {
+        closeModal();
+    }
+});
+
+function closeModal() {
+    infoModal.classList.remove('show');
+    setTimeout(() => {
+        infoModal.style.display = 'none';
+    }, 400); // 等待動畫結束
+}
+
+netflixBtn.addEventListener("click", () => {
+  // 1. 隱藏之前的干擾元素
+  const fireworks = document.getElementById("fireworks");
+  const slideshow = document.getElementById("slideshow");
+  if (fireworks) fireworks.style.display = "none";
+  if (slideshow) slideshow.style.display = "none";
+
+  // 2. 顯示 Netflix 螢幕
+  const netflixScreen = document.getElementById("netflix-screen");
+  const introVideo = document.getElementById("intro-video");
+  const introDiv = document.getElementById("netflix-intro");
+  const userPicker = document.getElementById("user-picker-ui");
+
+  netflixScreen.style.display = "flex";
+  introDiv.style.display = "flex"; // 確保影片容器是顯示的
+  userPicker.style.display = "none"; // 確保選人畫面先藏起來
+
+  if (introVideo) {
+    // 嘗試播放 (加 muted 是為了繞過瀏覽器攔截)
+    introVideo.muted = false; 
+    
+    const playPromise = introVideo.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.log("播放被攔截，改為靜音播放");
+        introVideo.muted = true;
+        introVideo.play();
+      });
+    }
+
+    // 影片播放結束的邏輯
+    introVideo.onended = function() {
+      showUserPicker();
+    };
+
+    // 【保險機制】如果影片檔案壞了或跑不動，5秒後自動跳轉
+    setTimeout(() => {
+      if (userPicker.style.display === "none") {
+        console.log("影片加載太慢，自動跳轉");
+        showUserPicker();
+      }
+    }, 5000);
+
+  } else {
+    showUserPicker(); // 沒抓到影片直接跳轉
+  }
+
+  function showUserPicker() {
+    introDiv.style.display = "none";
+    userPicker.style.display = "block";
+    if (typeof startPosterCarousel === "function") startPosterCarousel();
+  }
+});
+// --- 補上遺失的輪播函數 ---
+function startPosterCarousel() {
+  // 抓取你在 CSS 裡定義的 .netflix-carousel 容器
+  const container = document.querySelector(".netflix-carousel");
+  
+  if (!container) {
+    console.error("找不到 .netflix-carousel 容器");
+    return;
+  }
+
+  const posters = container.querySelectorAll("img");
+  console.log("找到海報數量:", posters.length);
+
+  if (posters.length === 0) return;
+
+  // 1. 初始化圖片：第一張顯示，其他隱藏
+  posters.forEach((img, i) => {
+    img.style.opacity = (i === 0) ? "1" : "0";
+    if (i === 0) img.classList.add("active");
+    else img.classList.remove("active");
+  });
+
+  let currentIndex = 0;
+
+  // 2. 清除舊的計時器（避免重複執行變超快）
+  if (window.posterTimer) clearInterval(window.posterTimer);
+
+  // 3. 設定每 3 秒切換一次
+  window.posterTimer = setInterval(() => {
+    // 舊圖淡出
+    posters[currentIndex].style.opacity = "0";
+    posters[currentIndex].classList.remove("active");
+
+    // 計算下一張索引
+    currentIndex = (currentIndex + 1) % posters.length;
+
+    // 新圖淡入
+    posters[currentIndex].style.opacity = "1";
+    posters[currentIndex].classList.add("active");
+    
+    console.log("海報切換至第 " + (currentIndex + 1) + " 張");
+  }, 3000);
+}
+function enterMainPage() {
+  const ui = document.getElementById("user-picker-ui");
+  ui.style.transition = "transform 0.8s, opacity 0.8s";
+  ui.style.transform = "scale(1.2)";
+  ui.style.opacity = "0";
+
+  setTimeout(() => {
+    document.getElementById("netflix-screen").style.display = "none";
+    document.getElementById("main-browse").style.display = "block";
+    document.body.style.overflowY = "auto"; 
+    window.scrollTo(0, 0);
+
+    const heroImg = document.querySelector(".hero-img");
+    const trailer = document.getElementById("hero-trailer");
+    
+    if (trailer) {
+      // 1. 確保影片不會循環播放
+      trailer.loop = false; 
+      trailer.src = "video2-2.MOV"; 
+      trailer.load();
+
+      // 2. 設定 5 秒後啟動預告片
+      setTimeout(() => {
+        trailer.style.display = "block";
+        trailer.style.opacity = "0";
+        
+        trailer.play().then(() => {
+          // 影片開始播放：圖片淡出，影片淡入
+          heroImg.style.opacity = "0";
+          trailer.style.opacity = "1";
+        }).catch(err => console.log("播放被攔截:", err));
+      }, 5000);
+
+      // 3. 【關鍵】監聽影片結束事件
+      trailer.onended = function() {
+        console.log("預告片播放結束，跳回靜態圖");
+        
+        // 影片淡出
+        trailer.style.opacity = "0";
+        // 圖片淡入
+        heroImg.style.opacity = "1";
+        
+        // 等淡出動畫完成後（1.5秒），隱藏影片元件以節省效能
+        setTimeout(() => {
+          trailer.style.display = "none";
+        }, 1500);
+      };
+    }
+  }, 800);
+}
+</script>
+<script>
+    const slider = document.querySelector('.row-posters');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    // 滑鼠按下
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.style.cursor = 'grabbing';
+        // 紀錄按下時的橫座標與捲動距離
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+
+    // 滑鼠離開區域
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+
+    // 滑鼠放開
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+
+    // 滑鼠移動
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return; // 沒按下就不動作
+        e.preventDefault();  // 防止預設的選取動作
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2.5; // 2.5 是拖拽靈敏度
+        slider.scrollLeft = scrollLeft - walk;
+    });
+    function openModal() {
+    const modal = document.getElementById('info-modal');
+    const video = document.getElementById('modalVideo');
+    modal.style.display = 'block';
+    video.play(); // 確保打開時觸發播放
+}
+
+function closeModal() {
+    const modal = document.getElementById('info-modal');
+    const video = document.getElementById('modalVideo');
+    modal.style.display = 'none';
+    video.pause(); // 關閉時停止影片節省資源
+}
+// 取得音樂元件
+const bgMusic = document.getElementById('bg-music');
+
+// 當點擊 More Info 按鈕時
+moreInfoBtn.addEventListener('click', () => {
+    infoModal.style.display = 'flex';
+    
+    // --- 播放音樂 ---
+    bgMusic.volume = 0.6; // 設定適中音量
+    bgMusic.play().catch(error => {
+        console.log("播放被瀏覽器阻擋，通常需要使用者互動");
+    });
+
+    setTimeout(() => { infoModal.classList.add('show'); }, 10);
+});
+
+// 修正後的關閉邏輯
+function closeModal() {
+    infoModal.classList.remove('show');
+   // 確保你的關閉按鈕有綁定這個 function
+closeInfoBtn.addEventListener('click', closeModal); 
+    
+    // --- 停止音樂並重設 ---
+    bgMusic.pause();        // 停止音樂
+    bgMusic.currentTime = 0; // 下次打開從頭播放
+    
+    setTimeout(() => {
+        infoModal.style.display = 'none';
+    }, 400); 
+}
+</script>
+<div id="dynamic-video-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 99999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s;">
+    <div class="info-card-container" style="width: 95%; max-width: 550px; background: #181818; border-radius: 12px; overflow: hidden; position: relative; max-height: 90vh; display: flex; flex-direction: column; transform: scale(0.9); transition: transform 0.4s;">
+        
+        <div id="close-dynamic-modal" style="position: absolute; top: 15px; right: 15px; z-index: 100; background: rgba(0,0,0,0.5); border: 2px solid white; width: 35px; height: 35px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px;">×</div>
+
+        <div style="width: 100%; background: #000; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
+    <video id="target-video-player" controls autoplay muted playsinline 
+           style="width: 100%; max-height: 60vh; display: block;">
+        <source src="">
+    </video>
+</div>
+
+        <div style="padding: 25px; color: white; overflow-y: auto;">
+            <h2 id="dynamic-video-title" style="margin: 0 0 10px 0; font-size: 22px; color: hotpink;">Memory Title</h2>
+            <p id="dynamic-video-desc" style="margin: 0; font-size: 14px; color: #ccc; line-height: 1.6;">這段影片的描述...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * 在這裡設定：海報圖片對應哪段影片
+ * 格式說明：'圖片名稱': { video: '影片路徑', title: '標題', desc: '內容' }
+ */
+const myVideoLibrary = {
+  // 新增這一行
+    'hero_main': {
+        video: 'video0.MOV', // 這裡填入你大影片的檔名
+        title: '生日快樂 Jefferson！',
+        desc: '友善提醒：本片字幕跑超快，請觀賞者做好心理準備，建議放輕鬆看，重點是感受我們的愛與回憶，細節就不用太care了哈哈哈'
+    },
+    'poster1-1.jpg': {
+        video: 'video1.MOV', 
+        title: '這個你看過了哈哈哈',
+        desc: '這是我剪的第一支影片哈哈哈哈，練習音樂卡點喵喵喵'
+    },
+    'poster10-1.jpg': {
+        video: 'video10.MOV', 
+        title: '千萬寵愛集一身',
+        desc: '到現在我依舊覺得這支手錶真的超級漂亮！真的很謝謝小豬送我這麼棒的禮物！帶出去還Bling Bling的～真的好漂亮好喜歡！'
+    },
+    'poster5-1.jpg': {
+        video: 'video5.MOV',
+        title: '愛在首爾',
+        desc: '雖然那天在南山上被風吹得頭很痛，但謝謝小豬還是陪我完成了在南山上鎖上愛情鎖的心願。'
+    },
+    'poster6-1.jpg': {
+        video: 'video6.MOV',
+        title: '夏日芬蘭湖畔 Season 1',
+        desc: '完全意料之外的行程！哪瓦曲的簽證沒過，本來你還在說那就不要去了，但我不想放棄我買好的機票哈哈哈，就出現了一連串有趣又好玩的回憶。然後沒有season2，因為來不及剪了喵喵喵'
+    },
+    'poster7-1.jpg': {
+        video: 'video7.MOV',
+        title: '一剪鍾情',
+        desc: '設計師芭尼首次操刀！剪完頭髮、抽完草，你如果主動發出戰鬥邀請，或許我們的故事會開始的更早（？）'
+    },
+    'poster11-1.jpg': {
+        video: 'video11.MOV',
+        title: '愛情限時批',
+        desc: '差一點把你送給別人，然後我自己含淚跳恰恰'
+    },
+     'poster4-1.jpg': {
+        video: 'video4.MOV',
+        title: '喵星人的奇思妙想',
+        desc: '在你的鼻孔尿尿（盜版動物星球頻道，本來是想說看看我有沒有當配音員的天份，看來並沒有。）'
+    },
+    'poster13-1.jpg': {
+        video: 'video13.MOV',
+        title: '睡飽飽才會變聰明',
+        desc: '睡得香甜的寶寶，希望你每天都能睡得好睡得飽睡得喵喵叫'
+    },
+    'poster9-1.jpg': {
+        video: 'video9.MOV',
+        title: '梵谷的光影',
+        desc: '陰雨綿綿的荷蘭，這是我們一起去歐洲玩的第一個地方！在紅燈區買了大麻布朗尼，但因為你生病，所以連吃都不用就累得倒頭就睡。住了一個鳥不生蛋的民宿，妄想著要騎巨人腳踏車到台夫特，還記得我們在民宿的浴室洗澡時冷得要命，討論誰要去開暖氣嗎？還有在郵輪上的那一晚（羞）'
+    },
+    'poster2-1.jpg': {
+        video: 'video2-1.MOV',
+        title: '日月行館看海獺',
+        desc: '你有看過海獺游泳嗎？如果沒有的話，請享用這個肉肉的海獺游泳影片！'
+    },
+    'poster12-1.jpg': {
+        video: 'video12.MOV',
+        title: '如何排解焦慮情緒',
+        desc: '也忘了為什麼心情不好，但是自己跟自己玩以後又好了？（聽起來好像神經病）順便測試一下手錶遠端控制手機的相機哈哈哈'
+    },
+    'poster14-1.jpg': {
+        video: 'video14.MOV',
+        title: '所以說 這也蠻簡單的',
+        desc: '並沒有。好像做出來了，但我也不知道我怎麼做出來的ＱＱ原本只是在網路上看到很多人套模板做像netflix風格的影片封面，但我覺得好無聊又不能點能按，所以才想說自己想辦法來做一個。結果還真的做的87分像？我根本天才～'
+    }
+
+    // 如果有更多海報，直接在下面繼續複製貼上
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('dynamic-video-modal');
+    const cardContainer = modal.querySelector('.info-card-container');
+    const video = document.getElementById('target-video-player');
+    const source = video.querySelector('source');
+    const title = document.getElementById('dynamic-video-title');
+    const desc = document.getElementById('dynamic-video-desc');
+    const closeBtn = document.getElementById('close-dynamic-modal');
+
+    // 抓取頁面上所有的海報
+    const allPosterCards = document.querySelectorAll('.poster-card');
+
+    allPosterCards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function() {
+            const img = this.querySelector('img');
+            if (!img) return;
+
+            // 取得圖片檔名 (不分大小寫)
+            const fileName = img.src.split('/').pop().toLowerCase();
+            const config = myVideoLibrary[fileName];
+
+            if (config) {
+                // 1. 換影片路徑
+                source.src = config.video;
+                video.load(); 
+                
+                // 2. 換文字內容
+                title.innerText = config.title;
+                desc.innerText = config.desc;
+
+                // 3. 顯示彈窗
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                    cardContainer.style.transform = 'scale(1)';
+                }, 10);
+                
+                // 4. 開始播放並取消靜音
+                video.muted = false;
+                video.play();
+            } else {
+                console.log("提示：這張海報圖片 (" + fileName + ") 尚未在腳本中設定對應影片。");
+            }
+        });
+    });
+// --- 新增：監聽 Hero 區域的 Play 按鈕 ---
+    const heroPlayBtn = document.querySelector('.btn-white'); // 抓取那個白色的 Play 按鈕
+    
+    if (heroPlayBtn) {
+        heroPlayBtn.addEventListener('click', function() {
+            const config = myVideoLibrary['hero_main']; // 讀取剛才設定的 hero_main 資料
+            
+            if (config) {
+                // 1. 換影片路徑
+                source.src = config.video;
+                video.load(); 
+                
+                // 2. 換文字內容
+                title.innerText = config.title;
+                desc.innerText = config.desc;
+
+                // 3. 顯示彈窗
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                    cardContainer.style.transform = 'scale(1)';
+                }, 10);
+                
+                // 4. 開始播放
+                video.muted = false;
+                video.play();
+            }
+        });
+    }
+    // 關閉功能
+    function closeModal() {
+        modal.style.opacity = '0';
+        cardContainer.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            modal.style.display = 'none';
+            video.pause();
+        }, 400);
+    }
+
+    closeBtn.onclick = closeModal;
+    modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+});
+</script>
+</body>
+</html>
